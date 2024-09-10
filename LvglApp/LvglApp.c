@@ -75,7 +75,7 @@ TestDemo (
   gST->ConOut->ClearScreen (gST->ConOut);
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
   while (1) {
-    lv_tick_inc(5);
+    lv_tick_inc(10);
     lv_task_handler();
     if (mEscExit) {
       break;

@@ -1,6 +1,6 @@
 # [LVGL](https://github.com/lvgl/lvgl) on UEFI Environment.
 
-## Demo
+## Build
 
 ```
 build -p LvglPkg\LvglPkg.dsc -m LvglPkg\LvglApp\LvglApp.inf -a X64 -t VS2015x86 -b RELEASE
@@ -22,7 +22,11 @@ build -p LvglPkg\LvglPkg.dsc -m LvglPkg\LvglApp\LvglApp.inf -a X64 -t VS2015x86 
 6. Press `Esc` to exit `LvglApp.efi`
 
 ## TODO
-- [x] Mouse(Absolute Pointer)
+- [x] Absolute Pointer Mouse
+- [ ] Simple Pointer Mouse
+- [ ] Mouse Wheel
 - [ ] Demo Selection
-- [ ] Simple Pointer Support
 - [ ] ...
+
+## Note
+1. For Edk2 EmulatorPkg user, use the RELEASE build or build LvglPkg/LvglApp/LvglApp.inf in EmulatorPkg.dsc

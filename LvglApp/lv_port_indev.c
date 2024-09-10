@@ -26,7 +26,6 @@ typedef struct {
   UINT32                         ActiveButtons;
   BOOLEAN                        LeftButton;
   BOOLEAN                        RightButton;
-  EFI_EVENT                      MouseEvent;
 } LVGL_UEFI_MOUSE;
 
 /**********************
@@ -157,15 +156,13 @@ lv_indev_t * lv_uefi_keyboard_create(void)
 EFI_STATUS
 EFIAPI
 GetXY (
-  IN  EFI_EVENT    Event,
-  IN  VOID         *Context
   )
 {
   EFI_STATUS                     Status;
   EFI_ABSOLUTE_POINTER_PROTOCOL  *AbsPointer = NULL;
   EFI_ABSOLUTE_POINTER_STATE     AbsState;
 
-  if (mLvglUefiMouse->AbsPointer != NULL && mLvglUefiMouse->MouseEvent != NULL) {
+  if (mLvglUefiMouse->AbsPointer != NULL) {
     AbsPointer = mLvglUefiMouse->AbsPointer;
     Status = gBS->CheckEvent (AbsPointer->WaitForInput);
     if (EFI_ERROR (Status)) {
@@ -173,10 +170,8 @@ GetXY (
     }
     Status = AbsPointer->GetState (AbsPointer, &AbsState);
     if (!EFI_ERROR (Status)) {
-      if (AbsState.CurrentX != mLvglUefiMouse->LastCursorX && AbsState.CurrentY != mLvglUefiMouse->LastCursorY) {
-        mLvglUefiMouse->LastCursorX = AbsState.CurrentX;
-        mLvglUefiMouse->LastCursorY = AbsState.CurrentY;
-      }
+      mLvglUefiMouse->LastCursorX = AbsState.CurrentX;
+      mLvglUefiMouse->LastCursorY = AbsState.CurrentY;
       mLvglUefiMouse->LeftButton = AbsState.ActiveButtons & BIT0;
 
       return EFI_SUCCESS;
@@ -197,61 +192,60 @@ EfiMouseInit (
 {
   EFI_STATUS                     Status;
   EFI_ABSOLUTE_POINTER_PROTOCOL  *AbsPointer = NULL;
+  EFI_HANDLE                     *HandleBuffer = NULL;
+  UINTN                          HandleCount, Index;
+  EFI_DEVICE_PATH_PROTOCOL       *DevicePath;
+  BOOLEAN                        AbsSupport = FALSE;
 
-  Status = gBS->LocateProtocol(&gEfiAbsolutePointerProtocolGuid, NULL, (VOID **) &AbsPointer);
+  Status = gBS->LocateHandleBuffer (ByProtocol, &gEfiAbsolutePointerProtocolGuid, NULL, &HandleCount, &HandleBuffer);
 
-  if (EFI_ERROR (Status)) {
+  for (Index = 0; Index < HandleCount; Index++) {
+    Status = gBS->HandleProtocol (HandleBuffer[Index], &gEfiDevicePathProtocolGuid, (VOID **)&DevicePath);
+    if (!EFI_ERROR (Status)) {
+      AbsSupport = TRUE;
+      break;
+    }
+  }
+
+  if (!AbsSupport) {
     return EFI_UNSUPPORTED;
   }
 
   DebugPrint (DEBUG_INFO, "EfiMouseInit()\n");
 
-  if (AbsPointer != NULL) {
+  Status = gBS->HandleProtocol (gST->ConsoleInHandle, &gEfiAbsolutePointerProtocolGuid, (VOID **)&AbsPointer);
+
+  if (!EFI_ERROR (Status) && AbsPointer != NULL) {
     AbsPointer->Reset(AbsPointer, TRUE);
+    mLvglUefiMouse->AbsPointer = AbsPointer;
+    mLvglUefiMouse->LastCursorX = 0;
+    mLvglUefiMouse->LastCursorY = 0;
+    mLvglUefiMouse->ActiveButtons = 0;
+    mLvglUefiMouse->LeftButton = FALSE;
   }
 
-  mLvglUefiMouse->AbsPointer = AbsPointer;
-  mLvglUefiMouse->MouseEvent = NULL;
-  mLvglUefiMouse->LastCursorX = 0;
-  mLvglUefiMouse->LastCursorY = 0;
-  mLvglUefiMouse->ActiveButtons = 0;
-  mLvglUefiMouse->LeftButton = FALSE;
-
-  Status = gBS->CreateEvent (
-                  EVT_TIMER | EVT_NOTIFY_SIGNAL,
-                  TPL_NOTIFY,
-                  (EFI_EVENT_NOTIFY) GetXY,
-                  NULL,
-                  &mLvglUefiMouse->MouseEvent
-                  );
-  if (EFI_ERROR (Status)) {
-    return EFI_UNSUPPORTED;
-  }
-
-  Status = gBS->SetTimer(mLvglUefiMouse->MouseEvent, TimerPeriodic, 100 * 1000);
-  if (EFI_ERROR (Status)) {
-    return EFI_UNSUPPORTED;
-  }
-
-  return EFI_SUCCESS;
+  return Status;
 }
 
 
 static void mouse_read(lv_indev_t * indev_drv, lv_indev_data_t * data)
 {
-
+  EFI_STATUS   Status;
   lv_display_t *disp = lv_indev_get_display(indev_drv);
 
   int32_t hor_res = lv_display_get_horizontal_resolution(disp);
   int32_t ver_res = lv_display_get_vertical_resolution(disp);
 
-  data->point.x = (mLvglUefiMouse->LastCursorX * hor_res) / (0xFFFF + 1);
-  data->point.y = (mLvglUefiMouse->LastCursorY * ver_res) / (0xFFFF + 1);
-  if (mLvglUefiMouse->LeftButton) {
-    data->state = LV_INDEV_STATE_PRESSED;
-    mLvglUefiMouse->LeftButton = FALSE;
-  } else {
-    data->state = LV_INDEV_STATE_RELEASED;
+  Status = GetXY();
+  if (!EFI_ERROR (Status)) {
+    data->point.x = (mLvglUefiMouse->LastCursorX * hor_res) / (0xFFFF + 1);
+    data->point.y = (mLvglUefiMouse->LastCursorY * ver_res) / (0xFFFF + 1);
+    if (mLvglUefiMouse->LeftButton) {
+      data->state = LV_INDEV_STATE_PRESSED;
+      mLvglUefiMouse->LeftButton = FALSE;
+    } else {
+      data->state = LV_INDEV_STATE_RELEASED;
+    }
   }
 
 }
@@ -289,7 +283,7 @@ lv_indev_t * lv_uefi_mouse_create(lv_display_t * disp)
     LV_IMG_DECLARE(mouse_cursor_icon);
     lv_obj_t * mouse_cursor = lv_image_create(lv_screen_active());
     lv_image_set_src(mouse_cursor, &mouse_cursor_icon);
-    // lv_indev_set_cusor_start(indev);
+    lv_indev_set_cusor_start(indev);
     lv_indev_set_cursor(indev, mouse_cursor);
 
     return indev;
@@ -321,8 +315,6 @@ void lv_port_indev_init(lv_display_t * disp)
 void lv_port_indev_close()
 {
 
-    if (mLvglUefiMouse->MouseEvent != NULL) {
-      gBS->CloseEvent (mLvglUefiMouse->MouseEvent);
-    }
+    if (mLvglUefiMouse != NULL) {}
 }
 
