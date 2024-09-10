@@ -23,7 +23,7 @@ build -p LvglPkg\LvglPkg.dsc -m LvglPkg\LvglApp\LvglApp.inf -a X64 -t VS2015x86 
 
 ## TODO
 - [x] Absolute Pointer Mouse
-- [ ] Simple Pointer Mouse
+- [x] Simple Pointer Mouse
 - [ ] Mouse Wheel
 - [ ] Demo Selection
 - [ ] ...
