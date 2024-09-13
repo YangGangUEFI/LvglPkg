@@ -351,12 +351,22 @@
   lvgl/src/widgets/win/lv_win.c
 
   # demos
-  # lvgl/demos/lv_demos.c
-  # lvgl/demos/widgets/assets/img_clothes.c
-  # lvgl/demos/widgets/assets/img_demo_widgets_avatar.c
-  # lvgl/demos/widgets/assets/img_demo_widgets_needle.c
-  # lvgl/demos/widgets/assets/img_lvgl_logo.c
-  # lvgl/demos/widgets/lv_demo_widgets.c
+  lvgl/demos/lv_demos.c
+  lvgl/demos/widgets/assets/img_clothes.c
+  lvgl/demos/widgets/assets/img_demo_widgets_avatar.c
+  lvgl/demos/widgets/assets/img_demo_widgets_needle.c
+  lvgl/demos/widgets/assets/img_lvgl_logo.c
+  lvgl/demos/widgets/lv_demo_widgets.c
+
+  lvgl/demos/benchmark/lv_demo_benchmark.c
+  lvgl/demos/benchmark/assets/img_benchmark_avatar.c
+  lvgl/demos/benchmark/assets/img_benchmark_cogwheel_alpha256.c
+  lvgl/demos/benchmark/assets/img_benchmark_cogwheel_argb.c
+  lvgl/demos/benchmark/assets/img_benchmark_cogwheel_indexed16.c
+  lvgl/demos/benchmark/assets/img_benchmark_cogwheel_rgb.c
+  lvgl/demos/benchmark/assets/lv_font_benchmark_montserrat_12_compr_az.c.c
+  lvgl/demos/benchmark/assets/lv_font_benchmark_montserrat_16_compr_az.c.c
+  lvgl/demos/benchmark/assets/lv_font_benchmark_montserrat_28_compr_az.c.c
 
   # keyboard
   lvgl/demos/keypad_encoder/lv_demo_keypad_encoder.c

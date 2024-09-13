@@ -6,7 +6,7 @@
 
 extern BOOLEAN  mEscExit;
 
-void my_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t * color32_p)
+void efi_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t * color32_p)
 {
   EFI_GRAPHICS_OUTPUT_PROTOCOL       *GraphicsOutput;
   EFI_STATUS                         Status;
@@ -38,6 +38,18 @@ void my_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t * c
 }
 
 
+#if LV_USE_LOG
+static void efi_lv_log_print(lv_log_level_t level, const char * buf)
+{
+    static const int priority[LV_LOG_LEVEL_NUM] = {
+        DEBUG_VERBOSE, DEBUG_INFO, DEBUG_WARN, DEBUG_ERROR, DEBUG_INFO, DEBUG_INIT
+    };
+
+    DebugPrint (priority[level], "[LVGL] %a\n", buf);
+}
+#endif
+
+
 VOID
 EFIAPI
 TestDemo (
@@ -56,6 +68,10 @@ TestDemo (
 
   lv_init();
 
+#if LV_USE_LOG
+  lv_log_register_print_cb (efi_lv_log_print);
+#endif
+
   Width  = GraphicsOutput->Mode->Info->HorizontalResolution;
   Heigth = GraphicsOutput->Mode->Info->VerticalResolution;
   lv_display_t *display = lv_display_create(Width, Heigth);
@@ -63,16 +79,23 @@ TestDemo (
   static lv_color32_t *buf1;
   static lv_color32_t *buf2;
   BufSize = Width * Heigth * sizeof (lv_color32_t);
-  buf1 = AllocateZeroPool (BufSize);
-  buf2 = AllocateZeroPool (BufSize);
+  buf1 = malloc (BufSize);
+  buf2 = malloc (BufSize);
+  if (!buf1 || !buf2) {
+    DebugPrint (DEBUG_ERROR, "Cannot init lv_display, deinit and return.\n");
+    lv_deinit();
+    return;
+  }
+
   lv_display_set_buffers(display, buf1, buf2, BufSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
-  lv_display_set_flush_cb(display, (lv_display_flush_cb_t)my_disp_flush);
+  lv_display_set_flush_cb(display, (lv_display_flush_cb_t)efi_disp_flush);
 
   lv_port_indev_init(display);
 
-  lv_demo_keypad_encoder();
-  // lv_demo_widgets();
+  // lv_demo_keypad_encoder();
+  lv_demo_widgets();
+  // lv_demo_benchmark();
 
   gST->ConOut->ClearScreen (gST->ConOut);
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);

@@ -26,7 +26,7 @@ build -p LvglPkg\LvglPkg.dsc -m LvglPkg\LvglApp\LvglApp.inf -a X64 -t VS2015x86 
 - [x] Simple Pointer Mouse
 - [ ] Mouse Wheel
 - [ ] Demo Selection
-- [ ] Log/Debug Print
+- [x] Log/Debug Print
 - [ ] ...
 
 ## Note

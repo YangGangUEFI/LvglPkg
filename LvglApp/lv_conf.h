@@ -42,7 +42,7 @@
  */
 #define LV_USE_STDLIB_MALLOC    LV_STDLIB_CLIB
 #define LV_USE_STDLIB_STRING    LV_STDLIB_CLIB
-#define LV_USE_STDLIB_SPRINTF   LV_STDLIB_CLIB
+#define LV_USE_STDLIB_SPRINTF   LV_STDLIB_BUILTIN
 
 #define LV_STDINT_INCLUDE       <stdint.h>
 #define LV_STDDEF_INCLUDE       <stddef.h>
@@ -261,7 +261,7 @@
  *-----------*/
 
 /*Enable the log module*/
-#define LV_USE_LOG 0
+#define LV_USE_LOG 1
 #if LV_USE_LOG
 
     /*How important log should be added:
@@ -856,7 +856,7 @@
      * Requires `LV_USE_SYSMON = 1`*/
     #define LV_USE_PERF_MONITOR 1
     #if LV_USE_PERF_MONITOR
-        #define LV_USE_PERF_MONITOR_POS LV_ALIGN_TOP_MID
+        #define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_RIGHT
 
         /*0: Displays performance data on the screen, 1: Prints performance data using log.*/
         #define LV_USE_PERF_MONITOR_LOG_MODE 0
@@ -867,7 +867,7 @@
      * Requires `LV_USE_SYSMON = 1`*/
     #define LV_USE_MEM_MONITOR 1
     #if LV_USE_MEM_MONITOR
-        #define LV_USE_MEM_MONITOR_POS LV_ALIGN_BOTTOM_MID
+        #define LV_USE_MEM_MONITOR_POS LV_ALIGN_BOTTOM_LEFT
     #endif
 
 #endif /*LV_USE_SYSMON*/
