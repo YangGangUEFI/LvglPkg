@@ -172,10 +172,6 @@ GetXY (
 
   if (mLvglUefiMouse->AbsPointer != NULL) {
     AbsPointer = mLvglUefiMouse->AbsPointer;
-    Status = gBS->CheckEvent (AbsPointer->WaitForInput);
-    if (EFI_ERROR (Status)) {
-      return EFI_NOT_READY;
-    }
     Status = AbsPointer->GetState (AbsPointer, &AbsState);
     if (!EFI_ERROR (Status)) {
       mLvglUefiMouse->LastCursorX = (AbsState.CurrentX * hor_res) / (AbsPointer->Mode->AbsoluteMaxX - AbsPointer->Mode->AbsoluteMinX);
@@ -192,10 +188,6 @@ GetXY (
     }
   } else if (mLvglUefiMouse->SimplePointer != NULL) {
     SimplePointer = mLvglUefiMouse->SimplePointer;
-    Status = gBS->CheckEvent (SimplePointer->WaitForInput);
-    if (EFI_ERROR (Status)) {
-      return EFI_NOT_READY;
-    }
     Status = SimplePointer->GetState (SimplePointer, &SimpleState);
     if (!EFI_ERROR (Status)) {
       mLvglUefiMouse->LastCursorX += SimpleState.RelativeMovementX / (INT32)SimplePointer->Mode->ResolutionX;
@@ -314,7 +306,6 @@ static void mouse_read(lv_indev_t * indev_drv, lv_indev_data_t * data)
     data->point.y = mLvglUefiMouse->LastCursorY;
     if (mLvglUefiMouse->LeftButton) {
       data->state = LV_INDEV_STATE_PRESSED;
-      mLvglUefiMouse->LeftButton = FALSE;
     } else {
       data->state = LV_INDEV_STATE_RELEASED;
     }
