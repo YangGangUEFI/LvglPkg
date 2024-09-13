@@ -61,9 +61,11 @@ TestDemo (
   lv_display_t *display = lv_display_create(Width, Heigth);
 
   static lv_color32_t *buf1;
+  static lv_color32_t *buf2;
   BufSize = Width * Heigth * sizeof (lv_color32_t);
   buf1 = AllocateZeroPool (BufSize);
-  lv_display_set_buffers(display, buf1, NULL, BufSize, LV_DISPLAY_RENDER_MODE_FULL);
+  buf2 = AllocateZeroPool (BufSize);
+  lv_display_set_buffers(display, buf1, buf2, BufSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
   lv_display_set_flush_cb(display, (lv_display_flush_cb_t)my_disp_flush);
 
@@ -75,11 +77,12 @@ TestDemo (
   gST->ConOut->ClearScreen (gST->ConOut);
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
   while (1) {
-    lv_tick_inc(10);
-    lv_task_handler();
     if (mEscExit) {
       break;
     }
+    gBS->Stall (10 * 1000);
+    lv_tick_inc(10);
+    lv_timer_handler();
   }
 
   lv_deinit();

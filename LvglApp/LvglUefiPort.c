@@ -10,16 +10,6 @@ typedef struct {
 
 #define LVGL_OVERHEAD  sizeof(LVGL_HEAD)
 
-
-int
-LvglStrCmp (
-  const char  *Str1,
-  const char  *Str2
-  )
-{
-  return (int)AsciiStrCmp (Str1, Str2);
-}
-
 void* memset (void *dest, char ch, unsigned int count)
 {
   return SetMem (dest, count, ch);

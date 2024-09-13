@@ -21,8 +21,8 @@ extern const lv_img_dsc_t mouse_cursor_icon;
 typedef struct {
   EFI_SIMPLE_POINTER_PROTOCOL    *SimplePointer;
   EFI_ABSOLUTE_POINTER_PROTOCOL  *AbsPointer;
-  UINTN                          LastCursorX;
-  UINTN                          LastCursorY;
+  INTN                           LastCursorX;
+  INTN                           LastCursorY;
   UINT32                         ActiveButtons;
   BOOLEAN                        LeftButton;
   BOOLEAN                        RightButton;
@@ -178,8 +178,14 @@ GetXY (
     }
     Status = AbsPointer->GetState (AbsPointer, &AbsState);
     if (!EFI_ERROR (Status)) {
-      mLvglUefiMouse->LastCursorX = (AbsState.CurrentX * hor_res) / 0x10000;
-      mLvglUefiMouse->LastCursorY = (AbsState.CurrentY * ver_res) / 0x10000;
+      mLvglUefiMouse->LastCursorX = (AbsState.CurrentX * hor_res) / (AbsPointer->Mode->AbsoluteMaxX - AbsPointer->Mode->AbsoluteMinX);
+      if (mLvglUefiMouse->LastCursorX >= hor_res) {
+        mLvglUefiMouse->LastCursorX = hor_res;
+      }
+      mLvglUefiMouse->LastCursorY = (AbsState.CurrentY * ver_res) / (AbsPointer->Mode->AbsoluteMaxY - AbsPointer->Mode->AbsoluteMinY);
+      if (mLvglUefiMouse->LastCursorY >= ver_res) {
+        mLvglUefiMouse->LastCursorY = ver_res;
+      }
       mLvglUefiMouse->LeftButton = AbsState.ActiveButtons & BIT0;
 
       return EFI_SUCCESS;
@@ -282,7 +288,7 @@ EfiMouseInit (
   }
 
   mLvglUefiMouse->SimplePointer = NULL;
-  if (SimplePointerSupport) {
+  if (SimplePointerSupport && !AbsPointerSupport) {
     Status = gBS->HandleProtocol (gST->ConsoleInHandle, &gEfiSimplePointerProtocolGuid, (VOID **)&SimplePointer);
     if (!EFI_ERROR (Status) && SimplePointer != NULL) {
       SimplePointer->Reset(SimplePointer, TRUE);
@@ -349,7 +355,7 @@ lv_indev_t * lv_uefi_mouse_create(lv_display_t * disp)
     LV_IMG_DECLARE(mouse_cursor_icon);
     lv_obj_t * mouse_cursor = lv_image_create(lv_screen_active());
     lv_image_set_src(mouse_cursor, &mouse_cursor_icon);
-    lv_indev_set_cusor_start(indev);
+    // lv_indev_set_cusor_start(indev);
     lv_indev_set_cursor(indev, mouse_cursor);
 
     return indev;

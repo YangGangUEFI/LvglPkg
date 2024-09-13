@@ -373,6 +373,7 @@
   BaseMemoryLib
   DebugLib
   PrintLib
+  BaseLib
 
 [Guids]
 

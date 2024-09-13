@@ -48,13 +48,7 @@ typedef INTN    intptr_t;
 #define strncat(strDest,strSource,count)  AsciiStrnCatS(strDest,MAX_STRING_SIZE,strSource,(UINTN)count)
 #define strncmp(string1,string2,count)    (int)(AsciiStrnCmp(string1,string2,(UINTN)(count)))
 #define strcasecmp(str1,str2)             (int)AsciiStriCmp(str1,str2)
-#define strcmp  LvglStrCmp
-
-int
-LvglStrCmp (
-  const char  *Str1,
-  const char  *Str2
-  );
+#define strcmp(str1,str2)                 (int)AsciiStrCmp (str1,str2)
 
 void *
 malloc (
