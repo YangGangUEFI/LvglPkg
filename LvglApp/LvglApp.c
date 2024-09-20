@@ -6,6 +6,8 @@
 
 extern BOOLEAN  mEscExit;
 
+BOOLEAN  mTickSupport = FALSE;
+
 void efi_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t * color32_p)
 {
   EFI_GRAPHICS_OUTPUT_PROTOCOL       *GraphicsOutput;
@@ -50,6 +52,23 @@ static void efi_lv_log_print(lv_log_level_t level, const char * buf)
 #endif
 
 
+static uint32_t tick_get_cb(void)
+{
+  return (UINT32) DivU64x32 (GetTimeInNanoSecond (GetPerformanceCounter()), 1000 * 1000);
+}
+
+VOID
+EFIAPI
+UefiLvglTickInit (
+  VOID
+  )
+{
+  if (GetPerformanceCounter()) {
+    mTickSupport = TRUE;
+    lv_tick_set_cb(tick_get_cb);
+  }
+}
+
 VOID
 EFIAPI
 TestDemo (
@@ -67,6 +86,8 @@ TestDemo (
   }
 
   lv_init();
+
+  UefiLvglTickInit();
 
 #if LV_USE_LOG
   lv_log_register_print_cb (efi_lv_log_print);
@@ -103,9 +124,13 @@ TestDemo (
     if (mEscExit) {
       break;
     }
-    gBS->Stall (10 * 1000);
-    lv_tick_inc(10);
+
     lv_timer_handler();
+
+    gBS->Stall (10 * 1000);
+    if (!mTickSupport) {
+      lv_tick_inc(10);
+    }
   }
 
   lv_deinit();

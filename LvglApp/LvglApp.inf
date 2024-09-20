@@ -384,6 +384,7 @@
   DebugLib
   PrintLib
   BaseLib
+  TimerLib
 
 [Guids]
 
