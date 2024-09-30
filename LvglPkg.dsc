@@ -123,7 +123,6 @@
   gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80280046
 
 [Components]
-  LvglPkg/LvglApp/LvglApp.inf
 
   LvglPkg/Application/LvglDemoApp/LvglDemoApp.inf {
     <LibraryClasses>
