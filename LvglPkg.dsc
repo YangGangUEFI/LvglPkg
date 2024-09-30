@@ -125,5 +125,10 @@
 [Components]
   LvglPkg/LvglApp/LvglApp.inf
 
+  LvglPkg/Application/LvglDemoApp/LvglDemoApp.inf {
+    <LibraryClasses>
+      LvglLib|LvglPkg/Library/LvglLib/LvglLib.inf
+  }
+
 [BuildOptions]
 

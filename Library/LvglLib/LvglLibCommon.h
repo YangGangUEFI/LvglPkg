@@ -1,7 +1,7 @@
 
 
-#ifndef __LVGL_APP_H__
-#define __LVGL_APP_H__
+#ifndef __LVGL_LIB_COMMON_H__
+#define __LVGL_LIB_COMMON_H__
 
 #include "lvgl/lvgl.h"
 #include "lv_port_indev.h"
@@ -19,11 +19,5 @@
 #include <Protocol/SimpleTextInEx.h>
 #include <Protocol/SimplePointer.h>
 #include <Protocol/AbsolutePointer.h>
-
-VOID
-EFIAPI
-TestDemo (
-  VOID
-  );
 
 #endif

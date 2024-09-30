@@ -1,5 +1,5 @@
 ## @file
-#  LVGL as UEFI Application.
+#  LVGL as UEFI Library Class.
 #
 #  Copyright (c) 2024, Yang Gang. All rights reserved.<BR>
 #
@@ -9,16 +9,15 @@
 ##
 
 [Defines]
-  INF_VERSION     = 0x00010018
-  BASE_NAME       = LvglApp
-  FILE_GUID       = 5719B5C8-5F9A-4205-BD09-2E416EF4BDCC
-  MODULE_TYPE     = UEFI_APPLICATION
+  INF_VERSION     = 0x00010005
+  BASE_NAME       = LvglLib
+  FILE_GUID       = DB82E73C-46EF-4490-9E6E-70E7AE65CCBB  
+  MODULE_TYPE     = BASE
   VERSION_STRING  = 1.0
-  ENTRY_POINT     = LvglAppEntry
+  LIBRARY_CLASS   = LvglLib
 
 [Sources]
-  LvglApp.c
-  LvglApp.h
+  LvglLib.c
   LvglUefiPort.h
   LvglUefiPort.c
 
@@ -350,30 +349,10 @@
   lvgl/src/widgets/tileview/lv_tileview.c
   lvgl/src/widgets/win/lv_win.c
 
-  # demos
-  lvgl/demos/lv_demos.c
-  lvgl/demos/widgets/assets/img_clothes.c
-  lvgl/demos/widgets/assets/img_demo_widgets_avatar.c
-  lvgl/demos/widgets/assets/img_demo_widgets_needle.c
-  lvgl/demos/widgets/assets/img_lvgl_logo.c
-  lvgl/demos/widgets/lv_demo_widgets.c
-
-  lvgl/demos/benchmark/lv_demo_benchmark.c
-  lvgl/demos/benchmark/assets/img_benchmark_avatar.c
-  lvgl/demos/benchmark/assets/img_benchmark_cogwheel_alpha256.c
-  lvgl/demos/benchmark/assets/img_benchmark_cogwheel_argb.c
-  lvgl/demos/benchmark/assets/img_benchmark_cogwheel_indexed16.c
-  lvgl/demos/benchmark/assets/img_benchmark_cogwheel_rgb.c
-  lvgl/demos/benchmark/assets/lv_font_benchmark_montserrat_12_compr_az.c.c
-  lvgl/demos/benchmark/assets/lv_font_benchmark_montserrat_16_compr_az.c.c
-  lvgl/demos/benchmark/assets/lv_font_benchmark_montserrat_28_compr_az.c.c
-
-  # keyboard
-  lvgl/demos/keypad_encoder/lv_demo_keypad_encoder.c
-
 [Packages]
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
+  LvglPkg/LvglPkg.dec
 
 [LibraryClasses]
   UefiLib

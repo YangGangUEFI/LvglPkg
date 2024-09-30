@@ -1,12 +1,13 @@
 
+#include "LvglLibCommon.h"
 
-#include "LvglApp.h"
-
-#include "lvgl/demos/lv_demos.h"
+#include <Library/LvglLib.h>
 
 extern BOOLEAN  mEscExit;
 
 BOOLEAN  mTickSupport = FALSE;
+STATIC BOOLEAN  mUefiLvglInitDone = FALSE;
+
 
 void efi_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t * color32_p)
 {
@@ -69,9 +70,10 @@ UefiLvglTickInit (
   }
 }
 
-VOID
+
+EFI_STATUS
 EFIAPI
-TestDemo (
+UefiLvglInit (
   VOID
   )
 {
@@ -82,7 +84,7 @@ TestDemo (
 
   Status = gBS->LocateProtocol (&gEfiGraphicsOutputProtocolGuid, NULL, (VOID **) &GraphicsOutput);
   if (EFI_ERROR(Status)) {
-    return;
+    return EFI_UNSUPPORTED;
   }
 
   lv_init();
@@ -105,7 +107,7 @@ TestDemo (
   if (!buf1 || !buf2) {
     DebugPrint (DEBUG_ERROR, "Cannot init lv_display, deinit and return.\n");
     lv_deinit();
-    return;
+    return EFI_DEVICE_ERROR;
   }
 
   lv_display_set_buffers(display, buf1, buf2, BufSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
@@ -114,24 +116,17 @@ TestDemo (
 
   lv_port_indev_init(display);
 
-  // lv_demo_keypad_encoder();
-  lv_demo_widgets();
-  // lv_demo_benchmark();
+  mUefiLvglInitDone = TRUE;
 
-  gST->ConOut->ClearScreen (gST->ConOut);
-  gST->ConOut->EnableCursor (gST->ConOut, FALSE);
-  while (1) {
-    if (mEscExit) {
-      break;
-    }
+  return EFI_SUCCESS;
+}
 
-    lv_timer_handler();
-
-    gBS->Stall (10 * 1000);
-    if (!mTickSupport) {
-      lv_tick_inc(10);
-    }
-  }
+EFI_STATUS
+EFIAPI
+UefiLvglDeinit (
+  VOID
+  )
+{
 
   lv_deinit();
 
@@ -141,29 +136,44 @@ TestDemo (
   gST->ConOut->SetCursorPosition (gST->ConOut, 0, 0);
   gST->ConOut->EnableCursor (gST->ConOut, TRUE);
 
-  return;
+  return EFI_SUCCESS;
 }
 
-
-/**
-  Entry point for LvglApp.
-
-  @param ImageHandle     Image handle this driver.
-  @param SystemTable     Pointer to SystemTable.
-
-  @retval Status         Whether this function complete successfully.
-
-**/
 EFI_STATUS
 EFIAPI
-LvglAppEntry (
-  IN  EFI_HANDLE        ImageHandle,
-  IN  EFI_SYSTEM_TABLE  *SystemTable
+UefiLvglAppRegister (
+  IN EFI_LVGL_APP_FUNCTION AppRegister
   )
 {
-  EFI_STATUS  Status = EFI_SUCCESS;
+  if (!mUefiLvglInitDone) {
+    if (UefiLvglInit() != EFI_SUCCESS) {
+      return EFI_UNSUPPORTED;
+    }
+  }
 
-  TestDemo();
+  if (AppRegister != NULL) {
+    gST->ConOut->ClearScreen (gST->ConOut);
+    gST->ConOut->EnableCursor (gST->ConOut, FALSE);
 
-  return Status;
+    // call user GUI APP
+    AppRegister();
+
+    while (1) {
+      if (mEscExit) {
+        break;
+      }
+
+      lv_timer_handler();
+
+      gBS->Stall (10 * 1000);
+      if (!mTickSupport) {
+        lv_tick_inc(10);
+      }
+    }
+  } else {
+    UefiLvglDeinit();
+    return EFI_UNSUPPORTED;
+  }
+
+  return EFI_SUCCESS;
 }

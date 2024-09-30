@@ -20,7 +20,7 @@ extern "C" {
 #include "lvgl/lvgl.h"
 #endif
 
-#include "LvglApp.h"
+#include "LvglLibCommon.h"
 
 /*********************
  *      DEFINES

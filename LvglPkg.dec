@@ -7,8 +7,10 @@
 
 [Includes]
   Include
+  Library/LvglLib/lvgl
 
 [Includes.Common.Private]
 
 
 [LibraryClasses]
+  LvglLib|Include/Library/LvglLib.h
