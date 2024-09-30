@@ -1,7 +1,7 @@
 
 
-#ifndef __LVGL_DXE_H__
-#define __LVGL_DXE_H__
+#ifndef __LVGL_APP_H__
+#define __LVGL_APP_H__
 
 #include "lvgl/lvgl.h"
 #include "lv_port_indev.h"

@@ -1,6 +1,6 @@
 
-#ifndef LVGL_UEFI_PORT_H
-#define LVGL_UEFI_PORT_H
+#ifndef __LVGL_UEFI_PORT_H__
+#define __LVGL_UEFI_PORT_H__
 
 #include <Library/MemoryAllocationLib.h>
 #include <Library/PrintLib.h>
