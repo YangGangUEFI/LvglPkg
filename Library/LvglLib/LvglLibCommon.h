@@ -20,4 +20,6 @@
 #include <Protocol/SimplePointer.h>
 #include <Protocol/AbsolutePointer.h>
 
+#include "LvglUefiPort.h"
+
 #endif

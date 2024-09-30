@@ -21,6 +21,7 @@
   LvglUefiPort.h
   LvglUefiPort.c
 
+  lv_uefi_display.c
   MouseCursorIcon.c
   lv_port_indev.c
   lv_conf.h

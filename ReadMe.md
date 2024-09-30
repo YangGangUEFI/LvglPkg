@@ -36,7 +36,6 @@ build -p LvglPkg\LvglPkg.dsc -a X64 -t VS2015x86 -b RELEASE
 - [x] Simple Pointer Mouse
 - [ ] Mouse Wheel
 - [x] Log/Debug Print
-- [ ] Driver code improve(*_set_driver_data, LV_EVENT_DELETE ...)
 - [ ] File System
 - [ ] ...
 

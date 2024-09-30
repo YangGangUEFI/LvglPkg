@@ -8,38 +8,7 @@ extern BOOLEAN  mEscExit;
 BOOLEAN  mTickSupport = FALSE;
 STATIC BOOLEAN  mUefiLvglInitDone = FALSE;
 
-
-void efi_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t * color32_p)
-{
-  EFI_GRAPHICS_OUTPUT_PROTOCOL       *GraphicsOutput;
-  EFI_STATUS                         Status;
-  UINTN                              Width, Heigth;
-
-  Status = gBS->LocateProtocol (&gEfiGraphicsOutputProtocolGuid, NULL, (VOID **) &GraphicsOutput);
-  if (EFI_ERROR(Status)) {
-    return;
-  }
-
-  Width = area->x2 - area->x1 + 1;
-  Heigth = area->y2 - area->y1 + 1;
-
-  Status =  GraphicsOutput->Blt (
-                              GraphicsOutput,
-                              (EFI_GRAPHICS_OUTPUT_BLT_PIXEL *)color32_p,
-                              EfiBltBufferToVideo,
-                              0,
-                              0,
-                              (UINTN)area->x1,
-                              (UINTN)area->y1,
-                              Width,
-                              Heigth,
-                              0
-                              );
-
-
-  lv_display_flush_ready(disp);
-}
-
+lv_display_t * lv_uefi_disp_create(int32_t hor_res, int32_t ver_res);
 
 #if LV_USE_LOG
 static void efi_lv_log_print(lv_log_level_t level, const char * buf)
@@ -80,7 +49,6 @@ UefiLvglInit (
   EFI_GRAPHICS_OUTPUT_PROTOCOL       *GraphicsOutput;
   EFI_STATUS                         Status;
   UINTN                              Width, Heigth;
-  UINTN                              BufSize;
 
   Status = gBS->LocateProtocol (&gEfiGraphicsOutputProtocolGuid, NULL, (VOID **) &GraphicsOutput);
   if (EFI_ERROR(Status)) {
@@ -97,22 +65,8 @@ UefiLvglInit (
 
   Width  = GraphicsOutput->Mode->Info->HorizontalResolution;
   Heigth = GraphicsOutput->Mode->Info->VerticalResolution;
-  lv_display_t *display = lv_display_create(Width, Heigth);
 
-  static lv_color32_t *buf1;
-  static lv_color32_t *buf2;
-  BufSize = Width * Heigth * sizeof (lv_color32_t);
-  buf1 = malloc (BufSize);
-  buf2 = malloc (BufSize);
-  if (!buf1 || !buf2) {
-    DebugPrint (DEBUG_ERROR, "Cannot init lv_display, deinit and return.\n");
-    lv_deinit();
-    return EFI_DEVICE_ERROR;
-  }
-
-  lv_display_set_buffers(display, buf1, buf2, BufSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
-
-  lv_display_set_flush_cb(display, (lv_display_flush_cb_t)efi_disp_flush);
+  lv_disp_t *display = lv_uefi_disp_create (Width, Heigth);
 
   lv_port_indev_init(display);
 
