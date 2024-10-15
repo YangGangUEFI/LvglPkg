@@ -298,17 +298,14 @@ EfiMouseInit (
 
 static void mouse_read(lv_indev_t * indev_drv, lv_indev_data_t * data)
 {
-  EFI_STATUS   Status;
 
-  Status = GetXY(indev_drv);
-  if (!EFI_ERROR (Status)) {
-    data->point.x = mLvglUefiMouse->LastCursorX;
-    data->point.y = mLvglUefiMouse->LastCursorY;
-    if (mLvglUefiMouse->LeftButton) {
-      data->state = LV_INDEV_STATE_PRESSED;
-    } else {
-      data->state = LV_INDEV_STATE_RELEASED;
-    }
+  GetXY(indev_drv);
+  data->point.x = mLvglUefiMouse->LastCursorX;
+  data->point.y = mLvglUefiMouse->LastCursorY;
+  if (mLvglUefiMouse->LeftButton) {
+    data->state = LV_INDEV_STATE_PRESSED;
+  } else {
+    data->state = LV_INDEV_STATE_RELEASED;
   }
 
 }
