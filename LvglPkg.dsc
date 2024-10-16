@@ -98,6 +98,8 @@
   VariableFlashInfoLib|MdeModulePkg/Library/BaseVariableFlashInfoLib/BaseVariableFlashInfoLib.inf
   IpmiCommandLib|MdeModulePkg/Library/BaseIpmiCommandLibNull/BaseIpmiCommandLibNull.inf
 
+  LvglLib|LvglPkg/Library/LvglLib/LvglLib.inf
+
 [LibraryClasses.common.DXE_RUNTIME_DRIVER, LibraryClasses.common.UEFI_DRIVER, LibraryClasses.common.DXE_DRIVER, LibraryClasses.common.UEFI_APPLICATION]
   HobLib|MdePkg/Library/DxeHobLib/DxeHobLib.inf
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
@@ -124,10 +126,11 @@
 
 [Components]
 
-  LvglPkg/Application/LvglDemoApp/LvglDemoApp.inf {
-    <LibraryClasses>
-      LvglLib|LvglPkg/Library/LvglLib/LvglLib.inf
-  }
+  LvglPkg/Application/LvglDemoApp/LvglDemoApp.inf
+
+  LvglPkg/Application/LvglDemos/LvglDemos.inf
+
+  LvglPkg/Application/LvglDemoSetup/LvglDemoSetup.inf
 
 [BuildOptions]
 

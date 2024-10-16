@@ -1,0 +1,36 @@
+## @file
+#  Demo APP that use LvglLib.
+#
+#  Copyright (c) 2024, Yang Gang. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = LvglDemos
+  FILE_GUID                      = 25BBFC0E-B099-4A6D-8BB1-C4C4FBEF9EA1  
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+
+[Sources]
+  LvglDemos.c
+  ../../Library/LvglLib/lvgl/demos/keypad_encoder/lv_demo_keypad_encoder.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  LvglPkg/LvglPkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiBootServicesTableLib
+  UefiLib
+  MemoryAllocationLib
+  BaseMemoryLib
+  DebugLib
+  LvglLib
