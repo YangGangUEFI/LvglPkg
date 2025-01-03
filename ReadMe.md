@@ -16,6 +16,10 @@ build -p LvglPkg\LvglPkg.dsc -a X64 -t VS2015x86 -b RELEASE
 
 ## Demo
 
+- [LvglDemoSetup.efi](./Demo/Bin/LvglDemoSetup.efi)
+  ![Setup1](./Demo/Images/Setup1.png)
+  ![Setup2](./Demo/Images/Setup2.png)
+
 - [LvglDemoApp.efi(New, just show UEFI logo)](./Demo/Bin/LvglDemoApp.efi)
   ![LvglDemoApp](./Demo/Images/LvglDemoApp.png)
 
@@ -37,6 +41,8 @@ build -p LvglPkg\LvglPkg.dsc -a X64 -t VS2015x86 -b RELEASE
 - [ ] Mouse Wheel
 - [x] Log/Debug Print
 - [ ] File System
+- [ ] VS2022/GCC/Clang
+- [ ] Code Clean(Remove Unused Source File in .inf)
 - [ ] ...
 
 ## Note

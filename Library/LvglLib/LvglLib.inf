@@ -62,6 +62,20 @@
   lvgl/src/draw/lv_draw_triangle.c
   lvgl/src/draw/lv_draw_vector.c
   lvgl/src/draw/lv_image_decoder.c
+  lvgl/src/draw/dma2d/lv_draw_dma2d.c
+  lvgl/src/draw/dma2d/lv_draw_dma2d_fill.c
+  lvgl/src/draw/dma2d/lv_draw_dma2d_img.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_arc.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_border.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_fill.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_hal.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_img.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_label.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_layer.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_line.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_triangle.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_utils.c
   lvgl/src/draw/nxp/pxp/lv_draw_buf_pxp.c
   lvgl/src/draw/nxp/pxp/lv_draw_pxp.c
   lvgl/src/draw/nxp/pxp/lv_draw_pxp_fill.c
@@ -84,6 +98,7 @@
   lvgl/src/draw/nxp/vglite/lv_vglite_matrix.c
   lvgl/src/draw/nxp/vglite/lv_vglite_path.c
   lvgl/src/draw/nxp/vglite/lv_vglite_utils.c
+  lvgl/src/draw/opengles/lv_draw_opengles.c
   lvgl/src/draw/renesas/dave2d/lv_draw_dave2d.c
   lvgl/src/draw/renesas/dave2d/lv_draw_dave2d_arc.c
   lvgl/src/draw/renesas/dave2d/lv_draw_dave2d_border.c
@@ -146,6 +161,7 @@
   lvgl/src/drivers/display/st7735/lv_st7735.c
   lvgl/src/drivers/display/st7789/lv_st7789.c
   lvgl/src/drivers/display/st7796/lv_st7796.c
+  lvgl/src/drivers/display/st_ltdc/lv_st_ltdc.c
   lvgl/src/drivers/evdev/lv_evdev.c
   lvgl/src/drivers/glfw/lv_glfw_window.c
   lvgl/src/drivers/glfw/lv_opengles_debug.c
@@ -236,6 +252,10 @@
   lvgl/src/libs/qrcode/qrcodegen.c
   lvgl/src/libs/rle/lv_rle.c
   lvgl/src/libs/rlottie/lv_rlottie.c
+  lvgl/src/libs/svg/lv_svg.c
+  lvgl/src/libs/svg/lv_svg_parser.c
+  lvgl/src/libs/svg/lv_svg_render.c
+  lvgl/src/libs/svg/lv_svg_token.c
   lvgl/src/libs/tiny_ttf/lv_tiny_ttf.c
   lvgl/src/libs/tjpgd/lv_tjpgd.c
   lvgl/src/libs/tjpgd/tjpgd.c
@@ -245,10 +265,12 @@
   lvgl/src/misc/lv_array.c
   lvgl/src/misc/lv_async.c
   lvgl/src/misc/lv_bidi.c
+  lvgl/src/misc/lv_circle_buf.c
   lvgl/src/misc/lv_color.c
   lvgl/src/misc/lv_color_op.c
   lvgl/src/misc/lv_event.c
   lvgl/src/misc/lv_fs.c
+  lvgl/src/misc/lv_iter.c
   lvgl/src/misc/lv_ll.c
   lvgl/src/misc/lv_log.c
   lvgl/src/misc/lv_lru.c
@@ -263,6 +285,7 @@
   lvgl/src/misc/lv_text.c
   lvgl/src/misc/lv_text_ap.c
   lvgl/src/misc/lv_timer.c
+  lvgl/src/misc/lv_tree.c
   lvgl/src/misc/lv_utils.c
   lvgl/src/misc/cache/lv_cache.c
   lvgl/src/misc/cache/lv_cache_entry.c
@@ -278,6 +301,9 @@
   lvgl/src/osal/lv_rtthread.c
   lvgl/src/osal/lv_windows.c
   lvgl/src/others/file_explorer/lv_file_explorer.c
+  lvgl/src/others/font_manager/lv_font_manager.c
+  lvgl/src/others/font_manager/lv_font_manager_recycle.c
+  lvgl/src/others/font_manager/lv_font_manager_utils.c
   lvgl/src/others/fragment/lv_fragment.c
   lvgl/src/others/fragment/lv_fragment_manager.c
   lvgl/src/others/gridnav/lv_gridnav.c
@@ -376,6 +402,6 @@
 
 [BuildOptions]
 
-  MSFT:*_*_*_CC_FLAGS = /wd4244 /wd4204 /wd4389 /wd4221 /wd4800 /wd4267 /wd4018 /wd4047 /wd4245 /wd4003 /wd4702 /wd4718 /wd4706 /wd4819
+  MSFT:*_*_*_CC_FLAGS = /wd4244 /wd4204 /wd4389 /wd4221 /wd4800 /wd4267 /wd4018 /wd4047 /wd4245 /wd4003 /wd4702 /wd4718 /wd4706 /wd4819 /wd4028
 
   MSFT:*_*_*_CC_FLAGS = /GL-

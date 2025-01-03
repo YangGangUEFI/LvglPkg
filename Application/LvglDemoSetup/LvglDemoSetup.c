@@ -63,9 +63,9 @@ LvglUefiDemoSetup (
     tv = lv_tabview_create(lv_screen_active());
 
     t1 = lv_tabview_add_tab(tv, "BIOS Info");
-    lv_tabview_set_tab_text_font (tv, 0, &lv_font_montserrat_20);
+    lv_obj_set_style_text_font(tv, &lv_font_montserrat_20, 0);
     t2 = lv_tabview_add_tab(tv, "Boot Manager");
-    lv_tabview_set_tab_text_font (tv, 1, &lv_font_montserrat_20);
+    lv_obj_set_style_text_font(tv, &lv_font_montserrat_20, 0);
 
     BiosInfoCreate (t1);
     BootManagerCreate (t2);

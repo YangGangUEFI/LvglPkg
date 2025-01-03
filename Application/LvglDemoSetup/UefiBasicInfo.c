@@ -245,7 +245,7 @@ UefiDimmInfo (
   SMBIOS_STRUCTURE_POINTER  SmbiosStructureP;
   UINT8                     DimmCount = 0;
   UINT16                    DimmSpeed = 0;
-  UINT16                    DimmSize = 0;
+  UINT64                    DimmSize = 0;
   UINT32                    ExtendedSize = 0;
   CHAR8                     *Manufacturer = NULL, *SerialNumber = NULL;
   CHAR8                     DimmInfoStr[256+1];
@@ -289,7 +289,33 @@ UefiDimmInfo (
 
   ZeroMem (DimmSizeStr, sizeof (DimmSizeStr));
   if (DimmSize == 0xFFFF || DimmSize == 0x0) {
-    DimmSizeStr[0] = '\0';
+    //
+    // Using T19
+    //
+    DimmSize = 0;
+    SmbiosHandle = SMBIOS_HANDLE_PI_RESERVED;
+    SmbiosType = EFI_SMBIOS_TYPE_MEMORY_ARRAY_MAPPED_ADDRESS;
+    while (TRUE) {
+      Status = Smbios->GetNext(Smbios, &SmbiosHandle, &SmbiosType, &SmbiosHdr, NULL);
+      if (EFI_ERROR (Status)) {
+        break;
+      }
+      SmbiosStructureP.Hdr = SmbiosHdr;
+      if (SmbiosStructureP.Type19->StartingAddress != 0xFFFFFFFF ) {
+        DimmSize += RShiftU64 (
+                             SmbiosStructureP.Type19->EndingAddress -
+                             SmbiosStructureP.Type19->StartingAddress + 1,
+                             10
+                             );
+      } else {
+        DimmSize += RShiftU64 (
+                             SmbiosStructureP.Type19->ExtendedEndingAddress -
+                             SmbiosStructureP.Type19->ExtendedStartingAddress + 1,
+                             20
+                             );
+      }
+    }
+    AsciiSPrint (DimmSizeStr, sizeof (DimmSizeStr), "%dMB ", DimmSize);
   } else if (DimmSize == 0x7FFF) {
     AsciiSPrint (DimmSizeStr, sizeof (DimmSizeStr), "%dMB ", (ExtendedSize & (~BIT31)));
   } else {
