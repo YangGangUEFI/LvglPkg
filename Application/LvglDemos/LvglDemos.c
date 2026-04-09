@@ -16,8 +16,11 @@
 
 #include <Library/LvglLib.h>
 
+void lv_demo_keypad_encoder(void);   // ← önce declaration
 
-void lv_demo_keypad_encoder(void);
+VOID EFIAPI LvglDemoKeypadEncoderWrapper (VOID) {   // ← sonra wrapper
+  lv_demo_keypad_encoder();
+}
 
 /**
   The user Entry Point for Application. The user code starts with this function
@@ -40,7 +43,7 @@ UefiMain (
   EFI_STATUS  Status;
 
   if (UefiLvglInit() == EFI_SUCCESS) {
-    Status = UefiLvglAppRegister (lv_demo_keypad_encoder);
+    Status = UefiLvglAppRegister (LvglDemoKeypadEncoderWrapper);
 
     if (!EFI_ERROR (Status)) {
       UefiLvglDeinit();

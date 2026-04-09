@@ -52,6 +52,7 @@ DisplayUefiLogo (
 }
 
 VOID
+EFIAPI
 LvglUefiDemo (
   VOID
   )

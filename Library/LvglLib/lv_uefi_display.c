@@ -21,7 +21,6 @@ static void uefi_disp_delete_evt_cb(lv_event_t * e)
 
 void uefi_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t * color32_p)
 {
-  EFI_STATUS                         Status;
   UINTN                              Width, Heigth;
   uefi_disp_data_t                   *uefi_disp_data;
   UINTN                              Delta;
@@ -32,18 +31,18 @@ void uefi_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t *
   Heigth = area->y2 - area->y1 + 1;
   Delta = uefi_disp_data->EfiGop->Mode->Info->HorizontalResolution * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
 
-  Status = uefi_disp_data->EfiGop->Blt (
-                                     uefi_disp_data->EfiGop,
-                                     (EFI_GRAPHICS_OUTPUT_BLT_PIXEL *)color32_p,
-                                     EfiBltBufferToVideo,
-                                     (UINTN)area->x1,
-                                     (UINTN)area->y1,
-                                     (UINTN)area->x1,
-                                     (UINTN)area->y1,
-                                     Width,
-                                     Heigth,
-                                     Delta
-                                     );
+  uefi_disp_data->EfiGop->Blt (
+                    uefi_disp_data->EfiGop,
+                    (EFI_GRAPHICS_OUTPUT_BLT_PIXEL *)color32_p,
+                    EfiBltBufferToVideo,
+                    (UINTN)area->x1,
+                    (UINTN)area->y1,
+                    (UINTN)area->x1,
+                    (UINTN)area->y1,
+                    Width,
+                    Heigth,
+                    Delta
+                    );
 
   lv_display_flush_ready(disp);
 }
