@@ -22,10 +22,21 @@ typedef struct {
   EFI_ABSOLUTE_POINTER_PROTOCOL  *AbsPointer;
   INTN                           LastCursorX;
   INTN                           LastCursorY;
+  UINT64                         LastAbsZ;
+  INT32                          WheelDelta;
   UINT32                         ActiveButtons;
   BOOLEAN                        LeftButton;
   BOOLEAN                        RightButton;
 } LVGL_UEFI_MOUSE;
+
+//
+// LVGL treats any non-zero pointer.diff as one full detent and scrolls by
+// scroll_limit (default 10px) per call (lv_indev.c:1638). QEMU usb-mouse can
+// send several wheel reports per perceived host wheel motion, so we ratchet:
+// accumulate raw Z counts and only emit one ±1 detent per N counts.
+// Lower this number = more sensitive. Raise = less sensitive.
+//
+#define LVGL_WHEEL_COUNTS_PER_DETENT  8
 
 /**********************
  *      TYPEDEFS
@@ -189,6 +200,12 @@ GetXY (
       }
       mLvglUefiMouse.LeftButton = AbsState.ActiveButtons & BIT0;
 
+      {
+        INT64 zDelta = (INT64)AbsState.CurrentZ - (INT64)mLvglUefiMouse.LastAbsZ;
+        mLvglUefiMouse.LastAbsZ = AbsState.CurrentZ;
+        mLvglUefiMouse.WheelDelta += (INT32)zDelta;
+      }
+
       return EFI_SUCCESS;
     }
   } else if (mLvglUefiMouse.SimplePointer != NULL) {
@@ -212,6 +229,8 @@ GetXY (
 
       mLvglUefiMouse.LeftButton = SimpleState.LeftButton;
       mLvglUefiMouse.RightButton = SimpleState.RightButton;
+
+      mLvglUefiMouse.WheelDelta += SimpleState.RelativeMovementZ;
 
       return EFI_SUCCESS;
     }
@@ -277,6 +296,8 @@ StartInit:
 
   mLvglUefiMouse.AbsPointer    = NULL;
   mLvglUefiMouse.SimplePointer = NULL;
+  mLvglUefiMouse.LastAbsZ      = 0;
+  mLvglUefiMouse.WheelDelta    = 0;
   mLvglUefiMouse.ActiveButtons = 0;
   mLvglUefiMouse.LeftButton    = FALSE;
   mLvglUefiMouse.RightButton   = FALSE;
@@ -287,8 +308,12 @@ StartInit:
     for (Index = 0; Index < HandleCount; Index++) {
       Status = gBS->HandleProtocol (HandleBuffer[Index], &gEfiAbsolutePointerProtocolGuid, (VOID **)&AbsPointer);
       if (!EFI_ERROR (Status) && AbsPointer != NULL) {
+        EFI_ABSOLUTE_POINTER_STATE InitialState;
         mLvglUefiMouse.AbsPointer = AbsPointer;
         DebugPrint (DEBUG_INFO, "AbsolutePointer found on handle %d\n", (UINTN)Index);
+        if (!EFI_ERROR (AbsPointer->GetState (AbsPointer, &InitialState))) {
+          mLvglUefiMouse.LastAbsZ = InitialState.CurrentZ;
+        }
         break;
       }
     }
@@ -329,6 +354,15 @@ static void mouse_read(lv_indev_t * indev_drv, lv_indev_data_t * data)
     data->state = LV_INDEV_STATE_RELEASED;
   }
 
+  if (mLvglUefiMouse.WheelDelta >= LVGL_WHEEL_COUNTS_PER_DETENT) {
+    data->enc_diff = 1;
+    mLvglUefiMouse.WheelDelta -= LVGL_WHEEL_COUNTS_PER_DETENT;
+  } else if (mLvglUefiMouse.WheelDelta <= -LVGL_WHEEL_COUNTS_PER_DETENT) {
+    data->enc_diff = -1;
+    mLvglUefiMouse.WheelDelta += LVGL_WHEEL_COUNTS_PER_DETENT;
+  } else {
+    data->enc_diff = 0;
+  }
 }
 
 
@@ -345,6 +379,7 @@ void lv_indev_set_cusor_start(lv_indev_t * indev)
     indev->pointer.act_point.y = ver_res / 2;
     mLvglUefiMouse.LastCursorX = hor_res / 2;
     mLvglUefiMouse.LastCursorY = ver_res / 2;
+    mLvglUefiMouse.WheelDelta = 0;
     mLvglUefiMouse.ActiveButtons = 0;
     mLvglUefiMouse.LeftButton = FALSE;
     mLvglUefiMouse.RightButton = FALSE;
@@ -401,6 +436,8 @@ void lv_port_indev_close()
   mLvglUefiMouse.SimplePointer = NULL;
   mLvglUefiMouse.LastCursorX = 0;
   mLvglUefiMouse.LastCursorY = 0;
+  mLvglUefiMouse.LastAbsZ = 0;
+  mLvglUefiMouse.WheelDelta = 0;
   mLvglUefiMouse.ActiveButtons = 0;
   mLvglUefiMouse.LeftButton = FALSE;
   mLvglUefiMouse.RightButton = FALSE;
