@@ -1,10 +1,10 @@
 /** @file
-  LVGL-based Display Engine — stub implementation.
+  LVGL-based Display Engine DXE driver.
 
   Produces EDKII_FORM_DISPLAY_ENGINE_PROTOCOL so that SetupBrowserDxe can
-  call FormDisplay(), ExitDisplay(), and ConfirmDataChange().  This skeleton
-  installs the protocol with minimal stub functions; the real LVGL rendering
-  will be added incrementally.
+  call FormDisplay(), ExitDisplay(), and ConfirmDataChange().  FormDisplay()
+  delegates to LvglFormRenderer which builds LVGL widgets from the
+  FORM_DISPLAY_ENGINE_FORM structure and runs the LVGL event loop.
 
   Copyright (c) 2024-2026, Hamit Karaca. All rights reserved.<BR>
   SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -17,6 +17,7 @@
 #include <Library/BaseMemoryLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Protocol/DisplayProtocol.h>
+#include "LvglFormRenderer.h"
 
 //
 // Private data
@@ -49,18 +50,7 @@ LvglFormDisplay (
 {
   DEBUG ((DEBUG_INFO, "LvglDisplayEngine: FormDisplay() called — FormId=0x%x\n", FormData->FormId));
 
-  //
-  // TODO: Walk FormData->StatementListHead, create LVGL widgets,
-  //       run lv_timer_handler() loop, capture user action.
-  //
-
-  //
-  // For now, signal ESC (form exit) so the browser doesn't hang.
-  //
-  ZeroMem (UserInputData, sizeof (USER_INPUT));
-  UserInputData->Action = BROWSER_ACTION_FORM_EXIT;
-
-  return EFI_SUCCESS;
+  return LvglRenderForm (FormData, UserInputData);
 }
 
 /**
@@ -75,9 +65,7 @@ LvglExitDisplay (
 {
   DEBUG ((DEBUG_INFO, "LvglDisplayEngine: ExitDisplay() called\n"));
 
-  //
-  // TODO: Tear down LVGL screen, free resources.
-  //
+  LvglRendererCleanup ();
 }
 
 /**

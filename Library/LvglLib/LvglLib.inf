@@ -514,7 +514,6 @@
 [LibraryClasses]
   UefiLib
   UefiBootServicesTableLib
-  UefiApplicationEntryPoint
   MemoryAllocationLib
   BaseMemoryLib
   DebugLib

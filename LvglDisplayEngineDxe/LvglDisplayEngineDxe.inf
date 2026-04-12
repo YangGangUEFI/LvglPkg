@@ -21,10 +21,13 @@
 
 [Sources]
   LvglDisplayEngineDxe.c
+  LvglFormRenderer.c
+  LvglFormRenderer.h
 
 [Packages]
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
+  LvglPkg/LvglPkg.dec
 
 [LibraryClasses]
   UefiDriverEntryPoint
@@ -33,9 +36,12 @@
   BaseMemoryLib
   BaseLib
   MemoryAllocationLib
+  HiiLib
+  LvglLib
 
 [Protocols]
   gEdkiiFormDisplayEngineProtocolGuid   ## PRODUCES
+  gEfiGraphicsOutputProtocolGuid        ## CONSUMES
 
 [Depex]
-  gEfiHiiDatabaseProtocolGuid AND gEfiHiiConfigRoutingProtocolGuid
+  gEfiHiiDatabaseProtocolGuid AND gEfiHiiConfigRoutingProtocolGuid AND gEfiGraphicsOutputProtocolGuid
