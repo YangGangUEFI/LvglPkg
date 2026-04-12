@@ -1,0 +1,41 @@
+## @file
+#  LVGL-based Display Engine DXE driver.
+#
+#  Produces EDKII_FORM_DISPLAY_ENGINE_PROTOCOL, replacing the text-mode
+#  DisplayEngineDxe with an LVGL graphical renderer.
+#
+#  Copyright (c) 2024-2026, Hamit Karaca. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = LvglDisplayEngine
+  FILE_GUID                      = 2BBBB898-5D42-4273-8165-50D8542A5064
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = LvglDisplayEngineInit
+  UNLOAD_IMAGE                   = LvglDisplayEngineUnload
+
+[Sources]
+  LvglDisplayEngineDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+
+[LibraryClasses]
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+  DebugLib
+  BaseMemoryLib
+  BaseLib
+  MemoryAllocationLib
+
+[Protocols]
+  gEdkiiFormDisplayEngineProtocolGuid   ## PRODUCES
+
+[Depex]
+  gEfiHiiDatabaseProtocolGuid AND gEfiHiiConfigRoutingProtocolGuid

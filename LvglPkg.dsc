@@ -138,5 +138,7 @@
 
   LvglPkg/Application/UefiDashboard/UefiDashboard.inf
 
+  LvglPkg/LvglDisplayEngineDxe/LvglDisplayEngineDxe.inf
+
 [BuildOptions]
 
