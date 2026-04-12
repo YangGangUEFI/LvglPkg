@@ -7,11 +7,17 @@
 build -p LvglPkg\LvglPkg.dsc -a X64 -t VS2022 -b RELEASE
 ```
 
+#### X64-GCC
+```
+. edksetup.sh
+build -p LvglPkg/LvglPkg.dsc -a X64 -t GCC -b RELEASE
+```
+
 #### AARCH64-GCC
 ```
-export GCC5_AARCH64_PREFIX=aarch64-none-linux-gnu-
+export GCC_AARCH64_PREFIX=aarch64-none-linux-gnu-
 . edksetup.sh
-build -p LvglPkg/LvglPkg.dsc -a AARCH64 -t GCC5 -b RELEASE
+build -p LvglPkg/LvglPkg.dsc -a AARCH64 -t GCC -b RELEASE
 ```
 
 ## LvglLib Usage
@@ -33,7 +39,7 @@ build -p LvglPkg/LvglPkg.dsc -a AARCH64 -t GCC5 -b RELEASE
 
 1. Download [OVMF.fd](./Demo/Bin/OVMF.fd)
 2. Create EfiFiles folder and copy `UefiDashboard.efi` binary to it
-3. qemu-system-x86_64.exe -bios OVMF.fd -hda fat:rw:EfiFiles -net none -usb -device usb-mouse -serial stdio
+3. qemu-system-x86_64 -bios OVMF.fd -hda fat:rw:EfiFiles -net none -device qemu-xhci,id=xhci -device usb-kbd,bus=xhci.0 -device usb-mouse,bus=xhci.0 -serial stdio
 4. Boot to UEFI Shell
 5. `fs0:` then [Enter], `UefiDashboard.efi` then [Enter]
 6. Press `Esc` to exit `UefiDashboard`
@@ -41,7 +47,7 @@ build -p LvglPkg/LvglPkg.dsc -a AARCH64 -t GCC5 -b RELEASE
 ## TODO
 - [x] Absolute Pointer Mouse
 - [x] Simple Pointer Mouse
-- [ ] Mouse Wheel
+- [x] Mouse Wheel
 - [x] Log/Debug Print
 - [ ] File System
 - [ ] ~~VS2022~~/~~AARCH64-GCC~~/Clang
