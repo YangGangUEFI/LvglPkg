@@ -294,6 +294,9 @@ EfiMouseInit (
 StartInit:
   DebugPrint (DEBUG_INFO, "EfiMouseInit()\n");
 
+  DebugPrint (DEBUG_INFO, "Abs Pointer: %d\n", AbsPointerSupport);
+  DebugPrint (DEBUG_INFO, "Simple Pointer: %d\n", SimplePointerSupport);
+
   mLvglUefiMouse.AbsPointer    = NULL;
   mLvglUefiMouse.SimplePointer = NULL;
   mLvglUefiMouse.LastAbsZ      = 0;
@@ -303,42 +306,20 @@ StartInit:
   mLvglUefiMouse.RightButton   = FALSE;
 
   if (AbsPointerSupport) {
-    HandleCount = 0;
-    Status = gBS->LocateHandleBuffer (ByProtocol, &gEfiAbsolutePointerProtocolGuid, NULL, &HandleCount, &HandleBuffer);
-    for (Index = 0; Index < HandleCount; Index++) {
-      Status = gBS->HandleProtocol (HandleBuffer[Index], &gEfiAbsolutePointerProtocolGuid, (VOID **)&AbsPointer);
-      if (!EFI_ERROR (Status) && AbsPointer != NULL) {
-        EFI_ABSOLUTE_POINTER_STATE InitialState;
-        mLvglUefiMouse.AbsPointer = AbsPointer;
-        DebugPrint (DEBUG_INFO, "AbsolutePointer found on handle %d\n", (UINTN)Index);
-        if (!EFI_ERROR (AbsPointer->GetState (AbsPointer, &InitialState))) {
-          mLvglUefiMouse.LastAbsZ = InitialState.CurrentZ;
-        }
-        break;
-      }
+    Status = gBS->HandleProtocol (gST->ConsoleInHandle, &gEfiAbsolutePointerProtocolGuid, (VOID **)&AbsPointer);
+    if (!EFI_ERROR (Status) && AbsPointer != NULL) {
+      mLvglUefiMouse.AbsPointer = AbsPointer;
     }
-    if (HandleBuffer != NULL) { FreePool (HandleBuffer); HandleBuffer = NULL; }
   }
 
-  if (mLvglUefiMouse.AbsPointer == NULL && SimplePointerSupport) {
-    HandleCount = 0;
-    Status = gBS->LocateHandleBuffer (ByProtocol, &gEfiSimplePointerProtocolGuid, NULL, &HandleCount, &HandleBuffer);
-    for (Index = 0; Index < HandleCount; Index++) {
-      Status = gBS->HandleProtocol (HandleBuffer[Index], &gEfiSimplePointerProtocolGuid, (VOID **)&SimplePointer);
-      if (!EFI_ERROR (Status) && SimplePointer != NULL) {
-        mLvglUefiMouse.SimplePointer = SimplePointer;
-        DebugPrint (DEBUG_INFO, "SimplePointer found on handle %d\n", (UINTN)Index);
-        break;
-      }
+  if (SimplePointerSupport && !AbsPointerSupport) {
+    Status = gBS->HandleProtocol (gST->ConsoleInHandle, &gEfiSimplePointerProtocolGuid, (VOID **)&SimplePointer);
+    if (!EFI_ERROR (Status) && SimplePointer != NULL) {
+      mLvglUefiMouse.SimplePointer = SimplePointer;
     }
-    if (HandleBuffer != NULL) { FreePool (HandleBuffer); HandleBuffer = NULL; }
   }
 
-  if (mLvglUefiMouse.AbsPointer == NULL && mLvglUefiMouse.SimplePointer == NULL) {
-    return EFI_UNSUPPORTED;
-  }
-
-  return EFI_SUCCESS;
+  return Status;
 }
 
 
